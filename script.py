@@ -13,7 +13,6 @@
 # <em><a href="https://www.flickr.com/photos/huntleypaton/16464994135/in/photostream/">Left Shark Steals The Show</a>. Katy Perry performing at halftime of Super Bowl XLIX. Photo by Huntley Paton. Attribution-ShareAlike 2.0 Generic (CC BY-SA 2.0).</em></p>
 # <p>The dataset we'll use was <a href="https://en.wikipedia.org/wiki/Web_scraping">scraped</a> and polished from Wikipedia. It is made up of three CSV files, one with <a href="https://en.wikipedia.org/wiki/List_of_Super_Bowl_champions">game data</a>, one with <a href="https://en.wikipedia.org/wiki/Super_Bowl_television_ratings">TV data</a>, and one with <a href="https://en.wikipedia.org/wiki/List_of_Super_Bowl_halftime_shows">halftime musician data</a> for all 52 Super Bowls through 2018. Let's take a look, using <code>display()</code> instead of <code>print()</code> since its output is much prettier in Jupyter Notebooks.</p>
 
-# In[32]:
 
 
 # Import pandas
@@ -34,7 +33,6 @@ display(halftime_musicians.head())
 # <p>From the visual inspection of TV and halftime musicians data, there is only one missing value displayed, but I've got a hunch there are more. The Super Bowl goes all the way back to 1967, and the more granular columns (e.g. the number of songs for halftime musicians) probably weren't tracked reliably over time. Wikipedia is great but not perfect.</p>
 # <p>An inspection of the <code>.info()</code> output for <code>tv</code> and <code>halftime_musicians</code> shows us that there are multiple columns with null values.</p>
 
-# In[34]:
 
 
 # Summary of the TV data to inspect
@@ -56,8 +54,6 @@ halftime_musicians.info()
 # <p>For the halftime musician data, there are missing numbers of songs performed (<code>num_songs</code>) for about a third of the performances.</p>
 # <p>There are a lot of potential reasons for these missing values. Was the data ever tracked? Was it lost in history? Is the research effort to make this data whole worth it? Maybe. Watching every Super Bowl halftime show to get song counts would be pretty fun. But we don't have the time to do that kind of stuff now! Let's take note of where the dataset isn't perfect and start uncovering some insights.</p>
 # <p>Let's start by looking at combined points for each Super Bowl by visualizing the distribution. Let's also pinpoint the Super Bowls with the highest and lowest scores.</p>
-
-# In[36]:
 
 
 # Import matplotlib and set plotting style
@@ -83,7 +79,6 @@ display(super_bowls[super_bowls['combined_pts'] < 25])
 # <p><em>UPDATE: In Super Bowl LIII in 2019, the Patriots and Rams broke the record for the lowest-scoring Super Bowl with a combined score of 16 points (13-3 for the Patriots).</em></p>
 # <p>Let's take a look at point <em>difference</em> now.</p>
 
-# In[38]:
 
 
 # Plot a histogram of point differences
@@ -101,8 +96,6 @@ display(super_bowls[super_bowls['difference_pts'] >= 35])
 # <p>The vast majority of Super Bowls are close games. Makes sense. Both teams are likely to be deserving if they've made it this far. The closest game ever was when the Buffalo Bills lost to the New York Giants by 1 point in 1991, which was  best remembered for Scott Norwood's last-second missed field goal attempt that went <em><a href="https://www.youtube.com/watch?v=RPFZCGgjDSg">wide right</a></em>, kicking off four Bills Super Bowl losses in a row. Poor Scott. The biggest point discrepancy ever was 45 points (!) where Hall of Famer Joe Montana's led the San Francisco 49ers to victory in 1990, one year before the closest game ever.</p>
 # <p>I remember watching the Seahawks crush the Broncos by 35 points (43-8) in 2014, which was a boring experience in my opinion. The game was never really close. I'm pretty sure we changed the channel at the end of the third quarter. Let's combine our game data and TV to see if this is a universal phenomenon. Do large point differences translate to lost viewers? We can plot <a href="https://en.wikipedia.org/wiki/Nielsen_ratings">household share</a> <em>(average percentage of U.S. households with a TV in use that were watching for the entire broadcast)</em> vs. point difference to find out.</p>
 
-# In[40]:
-
 
 # Join game and TV data, filtering out SB I because it was split over two networks
 games_tv = pd.merge(tv[tv['super_bowl'] > 1], super_bowls, on='super_bowl')
@@ -119,7 +112,7 @@ sns.regplot(x='difference_pts', y='share_household', data=games_tv)
 # <p>The downward sloping regression line and the 95% confidence interval for that regression <em>suggest</em> that bailing on the game if it is a blowout is common. Though it matches our intuition, we must take it with a grain of salt because the linear relationship in the data is weak due to our small sample size of 52 games.</p>
 # <p>Regardless of the score though, I bet most people stick it out for the halftime show, which is good news for the TV networks and advertisers. A 30-second spot costs a pretty <a href="https://www.businessinsider.com/super-bowl-commercials-cost-more-than-eagles-quarterback-earns-2018-1">\$5 million</a> now, but has it always been that way? And how have number of viewers and household ratings trended alongside ad cost? We can find out using line plots that share a "Super Bowl" x-axis.</p>
 
-# In[42]:
+
 
 
 # Create a figure with 3x1 subplot and activate the top subplot
@@ -152,7 +145,6 @@ plt.tight_layout()
 # </ul>
 # <p>It turns out Michael Jackson's Super Bowl XXVII performance, one of the most watched events in American TV history, was when the NFL realized the value of Super Bowl airtime and decided they needed to sign big name acts from then on out. The halftime shows before MJ indeed weren't that impressive, which we can see by filtering our <code>halftime_musician</code> data.</p>
 
-# In[44]:
 
 
 # Display all halftime musicians for Super Bowls up to and including Super Bowl XXVII
@@ -164,7 +156,6 @@ halftime_musicians[halftime_musicians.super_bowl <= 27]
 # <p>Lots of marching bands. American jazz clarinetist Pete Fountain. Miss Texas 1973 playing a violin. Nothing against those performers, they're just simply not <a href="https://www.youtube.com/watch?v=suIg9kTGBVI">Beyoncé</a>. To be fair, no one is.</p>
 # <p>Let's see all of the musicians that have done more than one halftime show, including their performance counts.</p>
 
-# In[46]:
 
 
 # Count halftime show appearances for each musician and sort them from most to least
@@ -185,8 +176,6 @@ halftime_appearances[halftime_appearances['super_bowl'] > 1]
 # </ul>
 # <p>Let's filter out marching bands by filtering out musicians with the word "Marching" in them and the word "Spirit" (a common naming convention for marching bands is "Spirit of [something]"). Then we'll filter for Super Bowls after Super Bowl XX to address the missing data issue, <em>then</em> let's see who has the most number of songs.</p>
 
-# In[48]:
-
 
 # Filter out most marching bands
 no_bands = halftime_musicians[~halftime_musicians.musician.str.contains('Marching')]
@@ -195,8 +184,7 @@ no_bands = no_bands[~no_bands.musician.str.contains('Spirit')]
 # Plot a histogram of number of songs per performance
 most_songs = int(max(no_bands['num_songs'].values))
 plt.hist(no_bands.num_songs.dropna(), bins=most_songs)
-# ... YOUR CODE FOR TASK 9 ...
-plt.xlabel('Nu')
+plt.xlabel('Number of Songs Per Halftime Show Performance')
 plt.ylabel('Number of Musicians')
 plt.show()
 
@@ -212,14 +200,12 @@ display(no_bands.head(15))
 # <p>This year's Big Game will be here before you know it. Who do you think will win Super Bowl LIII?</p>
 # <p><em>UPDATE: <a href="https://en.wikipedia.org/wiki/Super_Bowl_LIII">Spoiler alert</a>.</em></p>
 
-# In[ ]:
-
 
 # 2018-2019 conference champions
 patriots = 'New England Patriots'
 rams = 'Los Angeles Rams'
 
 # Who will win Super Bowl LIII?
-super_bowl_LIII_winner = ...
+super_bowl_LIII_winner = rams
 print('The winner of Super Bowl LIII will be the', super_bowl_LIII_winner)
 
